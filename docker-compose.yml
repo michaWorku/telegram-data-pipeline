@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432" # Map container port 5432 to host port 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persist database data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Python Application Service
+  app:
+    build:
+      context: . # Build from the current directory (where Dockerfile is)
+      dockerfile: Dockerfile
+    container_name: telegram_pipeline_app
+    environment:
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: db # Use the service name 'db' for inter-container communication
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - .:/app # Mount the current directory into the container for live code changes
+      - data:/app/data # Persist the data lake
+    ports:
+      - "8000:8000" # For FastAPI
+      - "3000:3000" # For Dagster UI
+    depends_on:
+      db:
+        condition: service_healthy # Ensure DB is healthy before starting app
+    # Entrypoint to load environment variables from .env file
+    entrypoint: /bin/bash -c "source .env && bash"
+    # Or, if using python-dotenv within your scripts:
+    # entrypoint: ["python", "-m", "your_app_module"] # Example for a main app entrypoint
+    # For development, we often just want a shell:
+    stdin_open: true # Keep stdin open even if not attached
+    tty: true        # Allocate a pseudo-TTY
+
+volumes:
+  db_data: # Volume for PostgreSQL data persistence
+  data:    # Volume for the data lake (raw, processed, enriched data)
