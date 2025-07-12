@@ -1,8 +1,25 @@
-# Add your project dependencies here
-# Example:
-# pandas
-# numpy
-# scikit-learn
-# dvc
-# pytest
-# flake8
+# Core dependencies
+python-dotenv
+psycopg2-binary # For PostgreSQL connectivity
+
+# Data Scraping (Telethon)
+telethon
+
+# Data Transformation (dbt)
+dbt-core
+dbt-postgres
+
+# Data Enrichment (YOLOv8)
+ultralytics
+
+# nalytical API (FastAPI)
+fastapi
+uvicorn[standard] # uvicorn with standard dependencies
+
+# Pipeline Orchestration (Dagster)
+dagster
+dagster-webserver
+
+# GitHub Actions (testing and linting support)
+pytest
+flake8
