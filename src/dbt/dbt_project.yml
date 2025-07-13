@@ -1,0 +1,37 @@
+name: 'telegram-data-pipeline'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'telegram-data-pipeline'
+
+# These configurations specify where dbt should find your models, tests, macros, etc.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL, logs, etc.
+clean-targets:         # directories to clean when `dbt clean` is run
+  - "target"
+  - "dbt_packages"
+  - "dbt_modules"
+
+# Configuration for models
+models:
+  telegram-data-pipeline:
+    # Config all models in this project to be materialized as views by default
+    # You can override this in individual model files
+    +materialized: view
+    +schema: analytics # Default schema for your transformed models (marts)
+
+    # Configure specific model paths
+    staging:
+      +materialized: view # Staging models often as views for flexibility
+      +schema: staging # Staging models in a separate schema
+
+    marts:
+      +materialized: table # Marts often as tables for performance
+      +schema: analytics # Final analytical models
