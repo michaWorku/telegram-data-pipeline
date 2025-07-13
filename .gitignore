@@ -167,3 +167,19 @@ logs/
 *.temp
 
 telegram_scraper_session.session
+
+# Telethon session files
+*.session
+
+# Docker artifacts
+.dockerignore # Don't ignore the .dockerignore itself
+# Docker volumes are managed by Docker, not committed
+
+# DBT artifacts and dependencies
+dbt_packages/
+src/dbt/dbt_packages/
+src/dbt/.user.yml
+src/dbt/package-lock.yml
+target/
+dbt_modules/ # Older dbt versions might use this
+logs

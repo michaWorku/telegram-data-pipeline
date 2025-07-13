@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Data Pipeline Diagrams</title>
+    <!-- Tailwind CSS for basic styling (optional, but good practice) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        .mermaid {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+            overflow-x: auto; /* Allow horizontal scrolling for large diagrams */
+        }
+        .diagram-title {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #34495e;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold mb-6 text-center">Telegram Data Pipeline Diagrams</h1>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold">1. Data Flow Diagram</h2>
+            <p class="mb-4 text-gray-700">This diagram illustrates the end-to-end flow of data through the pipeline, from raw ingestion to the final analytical layer.</p>
+            <div class="mermaid">
+                graph TD
+                    A[Telegram Channels] --> B{scripts/scrape_telegram.py}
+                    B --> C["Data Lake (data/raw/messages & images)"]
+                    C --> D{scripts/load_to_postgres.py}
+                    D --> E["PostgreSQL: raw.telegram_messages"]
+                    E --> F{dbt run}
+                    F --> G["PostgreSQL: staging.stg_telegram_messages"]
+                    G --> H["PostgreSQL: analytics.dim_channels"]
+                    G --> I["PostgreSQL: analytics.dim_dates"]
+                    G --> J["PostgreSQL: analytics.fct_messages"]
+                    J -- FK --> H
+                    J -- FK --> I
+                    subgraph Transformation (dbt)
+                        F
+                        G
+                        H
+                        I
+                        J
+                    end
+                    subgraph Data Lake
+                        C
+                    end
+                    subgraph Data Warehouse (PostgreSQL)
+                        E
+                        G
+                        H
+                        I
+                        J
+                    end
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold">2. Data Warehouse Star Schema (Conceptual)</h2>
+            <p class="mb-4 text-gray-700">This diagram depicts the star schema design for the analytical data warehouse, showing the central fact table and its associated dimension tables.</p>
+            <div class="mermaid">
+                erDiagram
+                    dim_channels ||--o{ fct_messages : "channel_id"
+                    dim_dates ||--o{ fct_messages : "date_key"
+
+                    dim_channels {
+                        BIGINT channel_id PK
+                        VARCHAR channel_name
+                        DATE first_message_date
+                        DATE last_message_date
+                        BIGINT total_messages
+                    }
+
+                    dim_dates {
+                        DATE date_key PK
+                        INT year
+                        INT month
+                        VARCHAR month_name
+                        INT day_of_month
+                        INT day_of_week
+                        VARCHAR day_name
+                        INT day_of_year
+                        INT week_of_year
+                        INT quarter
+                        VARCHAR year_month
+                        BOOLEAN is_weekend
+                    }
+
+                    fct_messages {
+                        BIGINT message_id PK
+                        BIGINT channel_id FK
+                        DATE date_key FK
+                        TIMESTAMP message_date
+                        TEXT message_text
+                        BIGINT sender_id
+                        BIGINT views
+                        BIGINT forwards
+                        BIGINT replies_count
+                        BOOLEAN has_media
+                        VARCHAR media_type
+                        TEXT media_local_path
+                        INT message_length_chars
+                        TIMESTAMP load_timestamp
+                    }
+            </div>
+        </div>
+    </div>
+
+    <!-- Mermaid.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        // Initialize Mermaid.js
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

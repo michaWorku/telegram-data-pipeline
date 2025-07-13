@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('POSTGRES_DB') }}"
+    schema: raw
+    tables:
+      - name: telegram_messages
+        description: "Raw Telegram messages loaded from the data lake."
+        columns:
+          - name: id
+            description: "Unique identifier for the message."
+            tests:
+              - unique
+              - not_null
+          - name: channel_id
+            description: "Identifier of the Telegram channel."
+          - name: message_date
+            description: "Timestamp of the message."
+          - name: raw_data
+            description: "Full raw JSON data of the Telegram message."

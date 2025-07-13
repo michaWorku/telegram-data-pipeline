@@ -1,4 +1,4 @@
-telegram-data-pipeline: # This is your dbt project name (from dbt_project.yml) - UPDATED
+telegram_data_pipeline:
   target: dev
   outputs:
     dev:
@@ -8,7 +8,5 @@ telegram-data-pipeline: # This is your dbt project name (from dbt_project.yml) -
       user: "{{ env_var('POSTGRES_USER') }}"
       password: "{{ env_var('POSTGRES_PASSWORD') }}"
       dbname: "{{ env_var('POSTGRES_DB') }}"
-      schema: public # Default schema for dbt models, can be overridden per model
-      threads: 4 # Number of concurrent connections dbt can use
-      # Optional: set a search_path if you have multiple schemas and want to prioritize
-      # search_path: [raw, public]
+      schema: public
+      threads: 4
