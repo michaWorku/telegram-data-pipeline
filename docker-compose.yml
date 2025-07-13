@@ -9,20 +9,23 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432" # Map container port 5432 to host port 5432
     volumes:
       - db_data:/var/lib/postgresql/data # Persist database data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 5s       # Check every 5 seconds
+      timeout: 3s        # Give pg_isready 3 seconds to respond
+      retries: 20        # Increased retries to 20 (from 10)
+      start_period: 45s  # Increased start_period to 45 seconds (from 20s)
+    restart: unless-stopped
 
   # Python Application Service
   app:
     build:
-      context: . # Build from the current directory (where Dockerfile is)
+      context: .
       dockerfile: Dockerfile
     container_name: telegram_pipeline_app
     environment:
@@ -31,20 +34,19 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: db # Use the service name 'db' for inter-container communication
+      POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
     volumes:
-      - .:/app # Mount the entire current project directory into the container.
-               # This means data/raw on your host will be /app/data/raw in the container.
+      - .:/app
     ports:
-      - "8000:8000" # For FastAPI
-      - "3000:3000" # For Dagster UI
+      - "8000:8000"
+      - "3000:3000"
     depends_on:
       db:
-        condition: service_healthy # Ensure DB is healthy before starting app
+        condition: service_healthy
     entrypoint: /bin/bash -c "source .env && bash"
-    stdin_open: true # Keep stdin open even if not attached
-    tty: true        # Allocate a pseudo-TTY
+    stdin_open: true
+    tty: true
 
 volumes:
-  db_data: # Volume for PostgreSQL data persistence
+  db_data:
