@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: dim_channels
+    description: "Dimension table for Telegram channels."
+    columns:
+      - name: channel_id
+        description: "Unique identifier for the Telegram channel."
+        tests:
+          - unique
+          - not_null
+      - name: channel_name
+        description: "Name of the Telegram channel."
+        tests:
+          - not_null
+
+  - name: dim_dates
+    description: "Dimension table for dates, used for time-based analysis."
+    columns:
+      - name: date_key
+        description: "Unique date key (YYYY-MM-DD)."
+        tests:
+          - unique
+          - not_null
+          - dbt_utils.expression_is_true: # Custom test: ensure date_key is a valid date
+              expression: "date_key = date_key::date"
+
+  - name: fct_messages
+    description: "Fact table containing one row per Telegram message."
+    columns:
+      - name: message_id
+        description: "Unique identifier for the message."
+        tests:
+          - unique
+          - not_null
+      - name: channel_id
+        description: "Foreign key to dim_channels."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_channels')
+              field: channel_id
+      - name: date_key
+        description: "Foreign key to dim_dates."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_key
+      - name: message_text
+        description: "Content of the Telegram message."
+        tests:
+          - not_null
+      - name: has_media
+        description: "Boolean indicating if the message contains media."
+        tests:
+          # Custom data test: Ensure that if has_media is true, media_type is not null
+          - dbt_utils.expression_is_true:
+              expression: "NOT (has_media = TRUE AND media_type IS NULL)"
+              # This test fails if a message claims to have media but has no media_type.
+              # This helps catch inconsistencies in the raw data or staging logic.
