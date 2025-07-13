@@ -94,11 +94,17 @@ telegram-data-pipeline/
 │   ├── unit/                 # Unit tests for individual components and functions.
 │   └── integration/          # Integration tests for combined components and system flows.
 ├── notebooks/                # Jupyter notebooks for experimentation, Exploratory Data Analysis (EDA), and prototyping.
-├── scripts/                  # Standalone utility scripts for various operations (e.g., data processing, deployment helpers).
+├── scripts/                  # Standalone Python scripts for various pipeline stages.
+│   ├── scrape_telegram.py    # Script to extract messages and images from Telegram channels.
+│   ├── load_to_postgres.py   # Script to load raw data from the data lake into PostgreSQL.
+│   └── enrich_data.py        # Script for running YOLOv8 object detection on images and storing results.
 ├── docs/                     # Project documentation (e.g., Sphinx docs, design documents).
-├── data/                     # Data storage directory.
-│   ├── raw/                  # Original, immutable raw data (e.g., scraped Telegram messages and images).
-│   └── processed/            # Transformed, cleaned, or feature-engineered data.
+├── data/                     # The Data Lake: Stores all raw, processed, and enriched data.
+│   └── raw/                  # Original, unaltered scraped data.
+│       └── telegram_messages/ # Raw Telegram message data, partitioned by date and channel.
+│           └── YYYY-MM-DD/
+│               └── channel_name.json
+│       └── images/           # Raw images scraped from Telegram channels.
 ├── config/                   # Configuration files for various parts of the application.
 └── examples/                 # Example usage of the project components or features.
 
