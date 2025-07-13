@@ -1,0 +1,13 @@
+    # Ignore the data directory, which contains scraped data
+    data/
+
+    # Ignore other common development artifacts
+    .env
+    .git
+    .vscode/
+    __pycache__/
+    *.pyc
+    *.log
+    venv/
+    *.session # Telethon session files
+    
