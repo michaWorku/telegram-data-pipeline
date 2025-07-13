@@ -10,7 +10,7 @@ dbt-core
 dbt-postgres
 
 # Data Enrichment (YOLOv8)
-ultralytics
+# ultralytics
 
 # nalytical API (FastAPI)
 fastapi
@@ -23,3 +23,4 @@ dagster-webserver
 # GitHub Actions (testing and linting support)
 pytest
 flake8
+pytest-asyncio
