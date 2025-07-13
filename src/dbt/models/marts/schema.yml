@@ -22,8 +22,8 @@ models:
         tests:
           - unique
           - not_null
-          - dbt_utils.expression_is_true: # Custom test: ensure date_key is a valid date
-              expression: "date_key = date_key::date"
+          # The custom test is now in src/dbt/tests/assert_valid_date_key.sql
+          # So, no generic test is needed here unless you want another one.
 
   - name: fct_messages
     description: "Fact table containing one row per Telegram message."
@@ -53,9 +53,5 @@ models:
           - not_null
       - name: has_media
         description: "Boolean indicating if the message contains media."
-        tests:
-          # Custom data test: Ensure that if has_media is true, media_type is not null
-          - dbt_utils.expression_is_true:
-              expression: "NOT (has_media = TRUE AND media_type IS NULL)"
-              # This test fails if a message claims to have media but has no media_type.
-              # This helps catch inconsistencies in the raw data or staging logic.
+        tests: [] # <-- THIS IS THE CRUCIAL FIX: Changed from 'None' to '[]'
+          # The custom test is now in src/dbt/tests/assert_media_type_exists_if_has_media.sql
