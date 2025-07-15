@@ -22,8 +22,7 @@ models:
         tests:
           - unique
           - not_null
-          # The custom test is now in src/dbt/tests/assert_valid_date_key.sql
-          # So, no generic test is needed here unless you want another one.
+          # Custom date validation test moved to src/dbt/tests/assert_valid_date_key.sql
 
   - name: fct_messages
     description: "Fact table containing one row per Telegram message."
@@ -53,5 +52,31 @@ models:
           - not_null
       - name: has_media
         description: "Boolean indicating if the message contains media."
-        tests: [] # <-- THIS IS THE CRUCIAL FIX: Changed from 'None' to '[]'
-          # The custom test is now in src/dbt/tests/assert_media_type_exists_if_has_media.sql
+        tests: [] # Custom test moved to src/dbt/tests/assert_media_type_exists_if_has_media.sql
+
+  - name: fct_image_detections
+    description: "Fact table for object detection results from images."
+    columns:
+      - name: detection_id
+        description: "Primary key for the detection record."
+        tests:
+          - unique
+          - not_null
+      - name: message_id
+        description: "Foreign key to fct_messages, linking detection to original message."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_messages')
+              field: message_id
+      - name: image_path
+        description: "Local path to the image file that was analyzed."
+        tests:
+          - not_null
+      - name: detected_object_class
+        description: "The class of the object detected (e.g., 'person', 'car')."
+        tests:
+          - not_null
+      - name: confidence_score
+        description: "The confidence score of the detection (0.0 to 1.0)."
+        tests: [] # Custom test moved to src/dbt/tests/assert_valid_confidence_score.sql
