@@ -97,7 +97,7 @@ telegram-data-pipeline/
 ├── scripts/                  # Standalone Python scripts for various pipeline stages.
 │   ├── scrape_telegram.py    # Script to extract messages and images from Telegram channels.
 │   ├── load_to_postgres.py   # Script to load raw data from the data lake into PostgreSQL.
-│   └── enrich_data.py        # Script for running YOLOv8 object detection on images and storing results.
+│   └── detect_objects.py        # Script for running YOLOv8 object detection on images and storing results.
 ├── docs/                     # Project documentation (e.g., Sphinx docs, design documents).
 ├── data/                     # The Data Lake: Stores all raw, processed, and enriched data.
 │   └── raw/                  # Original, unaltered scraped data.
