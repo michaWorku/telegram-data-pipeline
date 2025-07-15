@@ -19,3 +19,29 @@ sources:
             description: "Timestamp of the message."
           - name: raw_data
             description: "Full raw JSON data of the Telegram message."
+      - name: image_detections
+        description: "Raw object detection results from images."
+        columns:
+          - name: id
+            description: "Primary key for detection record."
+            tests:
+              - unique
+              - not_null
+          - name: message_id
+            description: "Foreign key to the original Telegram message."
+            tests:
+              - not_null
+          - name: image_path
+            description: "Local path to the image file."
+            tests:
+              - not_null
+          - name: detected_object_class
+            description: "Class of the detected object (e.g., 'person', 'car')."
+            tests:
+              - not_null
+          - name: confidence_score
+            description: "Confidence score of the detection (0-1)."
+            tests:
+              - not_null
+          - name: detection_timestamp
+            description: "Timestamp of when the detection was recorded."
