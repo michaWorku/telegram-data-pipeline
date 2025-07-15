@@ -1,15 +1,18 @@
-{{ config(materialized='table', schema='analytics') }}
+-- models/marts/dim_channels.sql
+
+{{
+    config(
+        materialized='table',
+        schema='analytics'
+    )
+}}
 
 SELECT
-    channel_id,
-    channel_name,
-    MIN(message_date) AS first_message_date,
-    MAX(message_date) AS last_message_date,
-    COUNT(DISTINCT message_id) AS total_messages
+    DISTINCT channel_id,
+    -- Extract channel name from message_raw_data
+    COALESCE(
+        (message_raw_data ->> 'peer_id')::text,
+        'Unknown Channel'
+    ) AS channel_name
 FROM
     {{ ref('stg_telegram_messages') }}
-WHERE
-    channel_id IS NOT NULL
-GROUP BY
-    channel_id,
-    channel_name

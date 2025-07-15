@@ -183,3 +183,9 @@ src/dbt/package-lock.yml
 target/
 dbt_modules/ # Older dbt versions might use this
 logs
+
+yolo_models/
+yolov8n.pt
+
+# Debug script (temporary, should not be committed)
+scripts/detect_objects_debug.py

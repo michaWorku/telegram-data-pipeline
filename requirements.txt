@@ -10,7 +10,19 @@ dbt-core
 dbt-postgres
 
 # Data Enrichment (YOLOv8)
-# ultralytics
+# Explicitly install numpy and opencv-python-headless for robustness
+numpy
+
+                                                                                                                                                                                                                                            ultralytics
+# Install CPU-only torch first to avoid large CUDA downloads
+# torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
+# ultralytics==8.0.20
+
+# Common dependencies for ML/data processing that ultralytics/torch might implicitly need
+Pillow
+PyYAML
+scipy
+tqdm
 
 # nalytical API (FastAPI)
 fastapi

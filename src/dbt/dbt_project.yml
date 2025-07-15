@@ -1,8 +1,8 @@
-name: 'telegram_data_pipeline' # Project name must use underscores, not hyphens
+name: 'telegram_data_pipeline'
 version: '1.0.0'
 config-version: 2
 
-profile: 'telegram_data_pipeline' # Must match the name in profiles.yml
+profile: 'telegram_data_pipeline'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -18,14 +18,14 @@ clean-targets:
   - "dbt_modules"
 
 models:
-  telegram_data_pipeline: # Must match the project name
-    +materialized: view # Default for all models in this project
-    +schema: analytics # Default schema for final analytical models
+  telegram_data_pipeline:
+    +materialized: view
+    # +schema: analytics
 
     staging:
-      +materialized: view # Staging models as views
-      +schema: staging # Staging models in a separate schema
+      +materialized: view
+      # +schema: staging
 
     marts:
-      +materialized: table # Marts as tables for performance
-      +schema: analytics # Final analytical models
+      +materialized: table
+      # +schema: analytics
